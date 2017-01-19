@@ -4,6 +4,7 @@
 #PBS -l nodes=1:ppn=16
 #PBS -l walltime=02:00:00
 #PBS -V
+#PBS -j oe
 
 # load SDK
 module load mesasdk

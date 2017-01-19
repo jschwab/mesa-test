@@ -4,6 +4,7 @@
 #PBS -l nodes=1:ppn=16
 #PBS -l walltime=00:05:00
 #PBS -V
+#PBS -k n
 
 # get MESA version
 cd ${MESA_DIR}
@@ -22,4 +23,3 @@ mail -s "MESA Test Suite r${VERSION}" -a star.log -a binary.log -a install.log $
 
 # clean stuff up
 rm install.log star.log-* star.log binary.log 
-

@@ -1,0 +1,43 @@
+* mesa-test
+This script submits a set of jobs that run the [[http://mesa.sourceforge.net/][MESA]] test_suite on a
+cluster.  It is written for the [[https://en.wikipedia.org/wiki/Portable_Batch_System][PBS]] job scheduler.  Nifty features
+include managing the dependencies between the jobs, running the star
+test_suite in parallel, and sending an email with the results.
+
+These scripts load the [[http://www.astro.wisc.edu/~townsend/static.php?ref=mesasdk][MESA SDK]] via [[http://modules.sourceforge.net/][modules]].  (You could also modify
+them to directly set the environment variables yourself.)  The module
+file I use is
+
+#+BEGIN_EXAMPLE
+  #%Module1.0
+  proc ModulesHelp { } {
+         Puts Stderr "This module adds MESA SDK 20160129 to various paths"
+  }
+
+  module-whatis "Sets up MESA SDK 20160129 in your environment"
+
+  set MESASDK_ROOT /pfs/home/jschwab/modules/mesasdk
+  setenv MESASDK_ROOT $MESASDK_ROOT
+  prepend-path PATH               $MESASDK_ROOT/bin/
+  prepend-path MANPATH            $MESASDK_ROOT/share/man/
+  setenv PGPLOT_DIR $MESASDK_ROOT/pgplot
+#+END_EXAMPLE
+
+** test-mesa.sh
+This is the script that you should run.  It needs network access to
+fetch the latest MESA version, so on my cluster, that means it needs
+to run on a login node.  It exits after checking out a new copy of
+MESA and spawning the other jobs.
+#+BEGIN_EXAMPLE
+./test-mesa.sh
+#+END_EXAMPLE
+** install.sh
+This installs MESA.
+** star.sh
+This runs the star test_suite. It uses PBS job arrays to run separate
+jobs for each test case.
+** binary.sh
+This runs the binary test_suite.
+** cleanup.sh
+This cleans up and will send an email with the results to
+MY_EMAIL_ADDRESS.  (Set this variable or edit the script.)

@@ -34,6 +34,10 @@ then
     exit 1
 fi
 
+# extract the "true" svn version
+cd ${MESA_DIR}
+svnversion > svnversion.out
+cd -
 
 # submit job to install MESA
 export INSTALL_JOBID=$(qsub install.sh -o ${MESA_DIR}/install.log)

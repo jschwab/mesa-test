@@ -8,7 +8,11 @@
 
 # get MESA version
 cd ${MESA_DIR}
-VERSION=$(<data/version_number)
+VERSION_DATA=$(<data/version_number)
+VERSION_SVN=$(<svnversion.out)
+
+# make version string "real (reported)"
+VERSION="${VERSION_SVN} (${VERSION_DATA})"
 
 # make output file
 cat star.log-* > star.log

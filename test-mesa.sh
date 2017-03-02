@@ -55,5 +55,5 @@ STAR_JOBID=$(qsub star.sh -o ${MESA_DIR}/star.log -W depend=afterok:${INSTALL_JO
 BINARY_JOBID=$(qsub binary.sh -o ${MESA_DIR}/binary.log -W depend=afterok:${INSTALL_JOBID})
 
 # send the email
-qsub cleanup.sh -W depend=afteranyarray:${STAR_JOBID},afterany:${BINARY_JOBID}
+qsub cleanup.sh -W depend=afteranyarray:${STAR_JOBID%%.hyades.local},afterany:${BINARY_JOBID}
 

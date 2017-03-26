@@ -42,6 +42,9 @@ cd -
 # submit job to install MESA
 export INSTALL_JOBID=$(qsub install.sh -o ${MESA_DIR}/install.log)
 
+# submit job to report build error
+qsub error.sh -W depend=afternotok:${INSTALL_JOBID}
+
 # next, run the star test suite
 # this is part is parallelized, so get the number of tests
 cd ${MESA_DIR}/star/test_suite

@@ -9,4 +9,4 @@
 module load mesasdk
 
 cd ${MESA_DIR}/binary/test_suite
-./each_binary_test_run
+./each_test_run_and_diff

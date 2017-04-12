@@ -3,7 +3,9 @@
 # set important enviroment variables
 export MESA_DIR=/pfs/jschwab/mesa-svn-test
 export OMP_NUM_THREADS=16
-export MESA_CACHES_DIR=/tmp
+#export MESA_CACHES_DIR=/tmp/mesa-cache
+
+export MESA_TEST_COMMAND=each_test_run
 
 # if we want to load our own copy of SVN, it must be 1.5.9
 # newer versions fail (as of 2016-09-21), though the version on the
@@ -43,7 +45,7 @@ cd -
 export INSTALL_JOBID=$(qsub install.sh -o ${MESA_DIR}/install.log)
 
 # submit job to report build error
-qsub error.sh -W depend=afternotok:${INSTALL_JOBID}
+# qsub error.sh -W depend=afternotok:${INSTALL_JOBID}
 
 # next, run the star test suite
 # this is part is parallelized, so get the number of tests
@@ -58,5 +60,5 @@ STAR_JOBID=$(qsub star.sh -o ${MESA_DIR}/star.log -W depend=afterok:${INSTALL_JO
 BINARY_JOBID=$(qsub binary.sh -o ${MESA_DIR}/binary.log -W depend=afterok:${INSTALL_JOBID})
 
 # send the email
-qsub cleanup.sh -W depend=afteranyarray:${STAR_JOBID%%.hyades.local},afterany:${BINARY_JOBID}
+qsub cleanup.sh -W depend=afterokarray:${STAR_JOBID},afterok:${BINARY_JOBID}
 

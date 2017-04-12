@@ -9,6 +9,12 @@
 # load SDK
 module load mesasdk
 
+# clean up cache dir if needed
+if [ -n "${MESA_CACHES_DIR}" ]; then
+    rm -rf ${MESA_CACHES_DIR}
+    mkdir -p ${MESA_CACHES_DIR}
+fi
+
 # build MESA
 cd $MESA_DIR
 ./clean

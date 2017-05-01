@@ -1,45 +1,65 @@
-#!/bin/bash -x
+#!/bin/bash
+set -euxo pipefail
 
-# set important enviroment variables
-export MESA_DIR=/pfs/jschwab/mesa-svn-test
+# choose which kind of test to run
+export MESA_TEST_COMMAND=each_test_run
+
+# pick version control system; default is svn
+case "$1" in
+    git)
+        export MESA_VC=git
+        export MESA_DIR=/pfs/jschwab/mesa-git-test
+        ;;
+    *)
+        export MESA_VC=svn
+        export MESA_DIR=/pfs/jschwab/mesa-svn-test
+        ;;
+esac
+
+
+# set other important enviroment variables
 export OMP_NUM_THREADS=16
 #export MESA_CACHES_DIR=/tmp/mesa-cache
 
-export MESA_TEST_COMMAND=each_test_run
+case "${MESA_VC}" in
 
-# if we want to load our own copy of SVN, it must be 1.5.9
-# newer versions fail (as of 2016-09-21), though the version on the
-# login node (which is 1.6.11) appears to work
-# 
-# module load subversion/1.5.9
+    # test SVN version
+    svn)
 
+        # the sourceforge site is unreliable
+        # therefore we keep an rsync-ed clone around
+        # we will checkout from this directory
+        export MESA_SVN_RSYNC=/pfs/jschwab/mesa-svn-rsync
+        rsync -av svn.code.sf.net::p/mesa/code/* ${MESA_SVN_RSYNC}
+        if [ $? -ne 0 ]
+        then
+            echo "Failed to sync SVN with sourceforge"
+            exit 1
+        fi
 
-# the sourceforge site is unreliable
-# therefore we keep an rsync-ed clone around
-# we will checkout from this directory
-export MESA_SVN_RSYNC=/pfs/jschwab/mesa-svn-rsync
-rsync -av svn.code.sf.net::p/mesa/code/* ${MESA_SVN_RSYNC}
-if [ $? -ne 0 ]
-then
-    echo "Failed to sync SVN with sourceforge"
-    exit 1
-fi
+        # remove old version of MESA directory
+        rm -rf ${MESA_DIR}
 
-# remove old version of MESA directory
-rm -rf ${MESA_DIR}
+        # checkout MESA from rsync clone
+        svn co file://${MESA_SVN_RSYNC}/trunk ${MESA_DIR}
+        if [ $? -ne 0 ]
+        then
+            echo "Failed to checkout SVN"
+            exit 1
+        fi
 
-# checkout MESA from rsync clone
-svn co file://${MESA_SVN_RSYNC}/trunk ${MESA_DIR}
-if [ $? -ne 0 ]
-then
-    echo "Failed to checkout SVN"
-    exit 1
-fi
+        # extract the "true" svn version
+        (
+            cd ${MESA_DIR}
+            svnversion > test.version
+        )
+        ;;
 
-# extract the "true" svn version
-cd ${MESA_DIR}
-svnversion > svnversion.out
-cd -
+    # test git version
+    git)
+        git --git-dir ${MESA_DIR}/.git describe --all --long > ${MESA_DIR}/test.version
+        ;;
+esac
 
 # submit job to install MESA
 export INSTALL_JOBID=$(qsub install.sh -o ${MESA_DIR}/install.log)
@@ -61,4 +81,3 @@ BINARY_JOBID=$(qsub binary.sh -o ${MESA_DIR}/binary.log -W depend=afterok:${INST
 
 # send the email
 qsub cleanup.sh -W depend=afterokarray:${STAR_JOBID},afterok:${BINARY_JOBID}
-

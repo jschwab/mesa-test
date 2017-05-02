@@ -76,8 +76,12 @@ cd -
 STAR_JOBID=$(qsub star.sh -o ${MESA_DIR}/star.log -W depend=afterok:${INSTALL_JOBID} -t 1-${NTESTS})
 
 # finally, run the binary test suite
-# this part is not parallelized
-BINARY_JOBID=$(qsub binary.sh -o ${MESA_DIR}/binary.log -W depend=afterok:${INSTALL_JOBID})
+# this is part is parallelized, so get the number of tests
+cd ${MESA_DIR}/binary/test_suite
+export NTESTS=$(./count_tests)
+cd -
+
+BINARY_JOBID=$(qsub binary.sh -o ${MESA_DIR}/binary.log -W depend=afterok:${INSTALL_JOBID} -t 1-${NTESTS})
 
 # send the email
-qsub cleanup.sh -W depend=afterokarray:${STAR_JOBID},afterok:${BINARY_JOBID}
+qsub cleanup.sh -W depend=afterokarray:${STAR_JOBID}:${BINARY_JOBID}

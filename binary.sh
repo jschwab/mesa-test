@@ -2,7 +2,7 @@
 
 #PBS -N binary
 #PBS -l nodes=1:ppn=16
-#PBS -l walltime=03:00:00
+#PBS -l walltime=02:00:00
 #PBS -V
 #PBS -j oe
 
@@ -16,4 +16,4 @@ if [ -n "${MESA_CACHES_DIR}" ]; then
     mkdir -p ${MESA_CACHES_DIR}
 fi
 
-./${MESA_TEST_COMMAND}
+./${MESA_TEST_COMMAND} ${PBS_ARRAYID}

@@ -5,6 +5,7 @@
 #PBS -l walltime=00:05:00
 #PBS -V
 #PBS -k n
+#PBS -o /dev/null
 
 # get MESA version
 cd ${MESA_DIR}
@@ -20,6 +21,7 @@ cat binary.log-* > binary.log
 
 # make output file
 echo "MESA Test Suite r${VERSION}" > output.txt
+echo ${MESA_TEST_COMMAND} >> output.txt
 grep "fail" star.log >> output.txt
 grep "fail" binary.log >> output.txt
 

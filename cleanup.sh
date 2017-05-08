@@ -7,6 +7,11 @@
 #PBS -k n
 #PBS -o /dev/null
 
+# wait a bit for final jobs to finish. there seems to be a race
+# condition where the output from the last job to finish isn't on disk
+# at the time the cleanup script is executed
+sleep 60
+
 # get MESA version
 cd ${MESA_DIR}
 VERSION_DATA=$(<data/version_number)

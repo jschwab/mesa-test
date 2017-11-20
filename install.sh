@@ -7,7 +7,7 @@
 #PBS -j oe
 
 # load SDK
-module load mesasdk
+module load mesasdk/20160129
 
 # clean up cache dir if needed
 if [ -n "${MESA_CACHES_DIR}" ]; then

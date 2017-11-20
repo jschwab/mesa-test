@@ -6,7 +6,7 @@
 #PBS -V
 #PBS -j oe
 
-module load mesasdk
+module load mesasdk/20160129
 
 cd ${MESA_DIR}/star/test_suite
 

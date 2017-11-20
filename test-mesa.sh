@@ -2,7 +2,11 @@
 set -euxo pipefail
 
 # choose which kind of test to run
-export MESA_TEST_COMMAND=each_test_run
+export MESA_TEST_COMMAND=each_test_run_and_diff
+
+# set OP opacities
+export MESA_OP_MONO_DATA_PATH=/pfs/jschwab/OP4STARS_1.3/mono
+export MESA_OP_MONO_DATA_CACHE_FILENAME=/pfs/jschwab/OP4STARS_1.3/mono/op_mono_cache.bin
 
 # pick version control system; default is svn
 case "$1" in

@@ -1,8 +1,15 @@
 #!/bin/bash
 set -euxo pipefail
 
+# if set, use mesa_test gem
+export USE_MESA_TEST=t
+
 # choose which kind of test to run
+# (no effect if USE_MESA_TEST=t)
 export MESA_TEST_COMMAND=each_test_run_and_diff
+
+# choose SDK version
+export MESASDK_VERSION=20160129
 
 # set OP opacities
 export MESA_OP_MONO_DATA_PATH=/pfs/jschwab/OP4STARS_1.3/mono
@@ -24,6 +31,16 @@ esac
 # set other important enviroment variables
 export OMP_NUM_THREADS=16
 #export MESA_CACHES_DIR=/tmp/mesa-cache
+
+clean_caches(){
+    # clean up cache dir if needed
+    if [ -n "${MESA_CACHES_DIR}" ]; then
+        rm -rf ${MESA_CACHES_DIR}
+        mkdir -p ${MESA_CACHES_DIR}
+    fi
+}
+
+export -f clean_caches
 
 case "${MESA_VC}" in
 

@@ -6,14 +6,12 @@
 #PBS -V
 #PBS -j oe
 
-module load mesasdk/20160129
+module load mesasdk/${MESASDK_VERSION}
+clean_caches
 
-cd ${MESA_DIR}/binary/test_suite
-
-# clean up cache dir if needed
-if [ -n "${MESA_CACHES_DIR}" ]; then
-    rm -rf ${MESA_CACHES_DIR}
-    mkdir -p ${MESA_CACHES_DIR}
+if [ -n USE_MESA_TEST ]; then
+    mesa_test test_one ${MESA_DIR} ${PBS_ARRAYID} --module=binary
+else
+    cd ${MESA_DIR}/binary/test_suite
+    ./${MESA_TEST_COMMAND} ${PBS_ARRAYID}
 fi
-
-./${MESA_TEST_COMMAND} ${PBS_ARRAYID}

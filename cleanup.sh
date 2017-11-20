@@ -5,7 +5,7 @@
 #PBS -l walltime=00:05:00
 #PBS -V
 #PBS -k n
-#PBS -o /dev/null
+#PBS -oe cleanup.out
 
 # wait a bit for final jobs to finish. there seems to be a race
 # condition where the output from the last job to finish isn't on disk

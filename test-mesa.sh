@@ -2,7 +2,7 @@
 set -euxo pipefail
 
 # if set, use mesa_test gem
-# export USE_MESA_TEST=t
+export USE_MESA_TEST=t
 
 # choose which kind of test to run
 # (no effect if USE_MESA_TEST=t)

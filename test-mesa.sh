@@ -1,12 +1,28 @@
 #!/bin/bash
 set -euxo pipefail
 
+# first argument chooses where to get MESA (git or svn)
+# second argument chooses which kind of test to run
+
 # if set, use mesa_test gem
 export USE_MESA_TEST=t
+export MESA_TEST_OPTIONS="--force --no-submit"
 
-# choose which kind of test to run
-# (no effect if USE_MESA_TEST=t)
-export MESA_TEST_COMMAND=each_test_run_and_diff
+# for MESA test, need to set the
+case "$2" in
+    run_and_diff)
+        export MESA_TEST_COMMAND=each_test_run_and_diff
+        export MESA_TEST_OPTIONS="${MESA_TEST_OPTIONS}"
+        ;;
+    run)
+        export MESA_TEST_COMMAND=each_test_run
+        export MESA_TEST_OPTIONS="${MESA_TEST_OPTIONS} --no-diff"
+        ;;
+    *)
+        exit
+        ;;
+esac
+
 
 # choose SDK version
 export MESASDK_VERSION=20160129

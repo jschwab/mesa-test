@@ -5,7 +5,8 @@ set -euxo pipefail
 # second argument chooses which kind of test to run
 
 # if set, use mesa_test gem
-export USE_MESA_TEST=t
+# for me, I always use it with svn
+# export USE_MESA_TEST=t
 export MESA_TEST_OPTIONS="--force --no-submit"
 
 # for MESA test, need to set the
@@ -38,6 +39,7 @@ case "$1" in
         export MESA_DIR=/pfs/jschwab/mesa-git-test
         ;;
     *)
+        export USE_MESA_TEST=t
         export MESA_VC=svn
         export MESA_DIR=/pfs/jschwab/mesa-svn-test
         ;;

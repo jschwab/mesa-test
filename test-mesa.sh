@@ -45,6 +45,11 @@ case "$1" in
         ;;
 esac
 
+# if directory is already being tested, exit
+if [ -e ${MESA_DIR}/.testing ]; then
+    echo "Tests are in-progress"
+    exit 1
+fi
 
 # set other important enviroment variables
 export OMP_NUM_THREADS=16
@@ -99,6 +104,9 @@ case "${MESA_VC}" in
         git --git-dir ${MESA_DIR}/.git describe --all --long > ${MESA_DIR}/test.version
         ;;
 esac
+
+# mark directory as being tested
+touch ${MESA_DIR}/.testing
 
 # submit job to install MESA
 export INSTALL_JOBID=$(qsub install.sh -o ${MESA_DIR}/install.log)

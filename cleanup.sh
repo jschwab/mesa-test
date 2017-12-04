@@ -36,3 +36,6 @@ mail -s "MESA Test Suite r${VERSION}" -a star.log -a binary.log -a install.log $
 
 # clean stuff up
 # rm install.log star.log-* star.log binary.log-* binary.log
+
+# indicate active testing is over
+touch ${MESA_DIR}/.testing

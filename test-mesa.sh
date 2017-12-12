@@ -95,8 +95,8 @@ case "${MESA_VC}" in
         # extract the "true" svn version
         (
             cd ${MESA_DIR}
-            svnversion > data/version_number
-            cp data/version_number test.version
+            svnversion > test.version
+            cp test.version data/version_number
         )
         ;;
 

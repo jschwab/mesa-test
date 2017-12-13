@@ -13,7 +13,7 @@ export MESA_TEST_OPTIONS="--force --no-submit"
 case "$2" in
     run_and_diff)
         export MESA_TEST_COMMAND=each_test_run_and_diff
-        export MESA_TEST_OPTIONS="${MESA_TEST_OPTIONS}"
+        export MESA_TEST_OPTIONS="${MESA_TEST_OPTIONS} --diff"
         ;;
     run)
         export MESA_TEST_COMMAND=each_test_run

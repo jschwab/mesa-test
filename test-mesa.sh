@@ -70,22 +70,8 @@ case "${MESA_VC}" in
     # test SVN version
     svn)
 
-        # the sourceforge site is unreliable
-        # therefore we keep an rsync-ed clone around
-        # we will checkout from this directory
-        export MESA_SVN_RSYNC=/pfs/jschwab/mesa-svn-rsync
-        rsync -av svn.code.sf.net::p/mesa/code/* ${MESA_SVN_RSYNC}
-        if [ $? -ne 0 ]
-        then
-            echo "Failed to sync SVN with sourceforge"
-            exit 1
-        fi
-
-        # remove old version of MESA directory
-        rm -rf ${MESA_DIR}
-
         # checkout MESA from rsync clone
-        svn co file://${MESA_SVN_RSYNC}/trunk ${MESA_DIR}
+        svn co https://subversion.assembla.com/svn/mesa^mesa/trunk ${MESA_DIR}
         if [ $? -ne 0 ]
         then
             echo "Failed to checkout SVN"

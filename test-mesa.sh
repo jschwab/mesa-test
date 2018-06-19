@@ -26,7 +26,7 @@ esac
 
 
 # choose SDK version
-export MESASDK_VERSION=20160129
+export MESASDK_VERSION=20180127
 
 # set OP opacities
 export MESA_OP_MONO_DATA_PATH=/pfs/jschwab/OP4STARS_1.3/mono

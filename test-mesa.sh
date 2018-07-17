@@ -70,6 +70,9 @@ case "${MESA_VC}" in
     # test SVN version
     svn)
 
+        # remove old version of MESA directory
+        rm -rf ${MESA_DIR}
+
         # checkout MESA from rsync clone
         svn co https://subversion.assembla.com/svn/mesa^mesa/trunk ${MESA_DIR}
         if [ $? -ne 0 ]

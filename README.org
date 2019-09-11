@@ -1,6 +1,6 @@
 * mesa-test
 This script submits a set of jobs that run the [[http://mesa.sourceforge.net/][MESA]] test_suite on a
-cluster.  It is written for the [[https://en.wikipedia.org/wiki/Portable_Batch_System][PBS]] job scheduler.  Nifty features
+cluster.  It is written for the [[https://slurm.schedmd.com/documentation.html][SLURM]] job scheduler.  Nifty features
 include managing the dependencies between the jobs, running the star
 test_suite in parallel, and sending an email with the results.
 
@@ -8,20 +8,21 @@ These scripts load the [[http://www.astro.wisc.edu/~townsend/static.php?ref=mesa
 them to directly set the environment variables yourself.)  The module
 file I use is
 
-#+BEGIN_EXAMPLE
+#+begin_example
   #%Module1.0
   proc ModulesHelp { } {
-         Puts Stderr "This module adds MESA SDK 20160129 to various paths"
+         Puts Stderr "This module adds MESA SDK 20190830 to various paths"
   }
 
-  module-whatis "Sets up MESA SDK 20160129 in your environment"
+  module-whatis "Sets up MESA SDK 20190830 in your environment"
 
-  set MESASDK_ROOT /pfs/home/jschwab/modules/mesasdk
+  set HOME $env(HOME)
+  set MESASDK_ROOT $HOME/modules/mesasdk-20190830
   setenv MESASDK_ROOT $MESASDK_ROOT
   prepend-path PATH               $MESASDK_ROOT/bin/
   prepend-path MANPATH            $MESASDK_ROOT/share/man/
-  setenv PGPLOT_DIR $MESASDK_ROOT/pgplot
-#+END_EXAMPLE
+  setenv PGPLOT_DIR $MESASDK_ROOT/lib/pgplot
+#+end_example
 
 ** test-mesa.sh
 This is the script that you should run.  It needs network access to
@@ -29,15 +30,21 @@ fetch the latest MESA version, so on my cluster, that means it needs
 to run on a login node.  It exits after checking out a new copy of
 MESA and spawning the other jobs.
 #+BEGIN_EXAMPLE
-./test-mesa.sh
+./test-mesa.sh [GIT OR SVN]
 #+END_EXAMPLE
+The first argument picks whether to run from the svn using [[https://github.com/MESAHub/mesa_test][mesa_test]]
+or from git using the built-in `each_test_run`.
 ** install.sh
 This installs MESA.
 ** star.sh
-This runs the star test_suite. It uses PBS job arrays to run separate
-jobs for each test case.
+This runs the star test_suite. It uses arrays to run separate jobs for
+each test case.
 ** binary.sh
-This runs the binary test_suite.
+This runs the binary test_suite.  It uses arrays to run separate jobs
+for each test case.
 ** cleanup.sh
 This cleans up and will send an email with the results to
 MY_EMAIL_ADDRESS.  (Set this variable or edit the script.)
+** git-hook.sh
+This is an example post-receive hook that can start the tests when a
+git repo is pushed to.

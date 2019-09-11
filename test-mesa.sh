@@ -21,7 +21,7 @@ export MESA_OP_MONO_DATA_CACHE_FILENAME=${HOME}/OP4STARS_1.3/mono/op_mono_cache.
 
 export MESA_BASE_DIR=/data/users/jwschwab
 
-MY_EMAIL_ADDRESS=jwschwab@ucsc.edu
+export MY_EMAIL_ADDRESS=jwschwab@ucsc.edu
 
 # pick version control system; default is svn
 case "$1" in
@@ -90,7 +90,7 @@ esac
 touch ${MESA_DIR}/.testing
 
 # submit job to install MESA
-export INSTALL_JOBID=$(sbatch --parsable -o ${MESA_DIR}/install.log install.sh)
+export INSTALL_JOBID=$(sbatch --parsable --output="${MESA_DIR}/install.log" install.sh)
 
 # submit job to report build error
 # sbatch error.sh -W depend=afternotok:${INSTALL_JOBID}
@@ -101,7 +101,7 @@ cd ${MESA_DIR}/star/test_suite
 export NTESTS=$(./count_tests)
 cd -
 
-STAR_JOBID=$(sbatch --parsable -o ${MESA_DIR}/star.log --dependency=afterok:${INSTALL_JOBID} --array=1-${NTESTS} star.sh)
+export STAR_JOBID=$(sbatch --parsable --output="${MESA_DIR}/star.log-%a" --dependency=afterok:${INSTALL_JOBID} --array=1-${NTESTS} star.sh)
 
 # finally, run the binary test suite
 # this is part is parallelized, so get the number of tests
@@ -109,7 +109,8 @@ cd ${MESA_DIR}/binary/test_suite
 export NTESTS=$(./count_tests)
 cd -
 
-BINARY_JOBID=$(sbatch --parsable -o ${MESA_DIR}/binary.log --dependency=afterok:${INSTALL_JOBID} --array=1-${NTESTS} binary.sh)
+export BINARY_JOBID=$(sbatch --parsable --output="${MESA_DIR}/binary.log-%a" --dependency=afterok:${INSTALL_JOBID} --array=1-${NTESTS} binary.sh)
 
 # send the email
-sbatch --dependency=afterany:${STAR_JOBID},afterany:${BINARY_JOBID} cleanup.sh
+sbatch --output="${MESA_DIR}/cleanup.log" --dependency=afterany:${STAR_JOBID},afterany:${BINARY_JOBID} cleanup.sh
+

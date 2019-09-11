@@ -21,6 +21,8 @@ export MESA_OP_MONO_DATA_CACHE_FILENAME=${HOME}/OP4STARS_1.3/mono/op_mono_cache.
 
 export MESA_BASE_DIR=/data/users/jwschwab
 
+MY_EMAIL_ADDRESS=jwschwab@ucsc.edu
+
 # pick version control system; default is svn
 case "$1" in
     git)

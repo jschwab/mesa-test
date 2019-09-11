@@ -1,12 +1,13 @@
 #!/bin/bash
 
-#PBS -N cleanup
-#PBS -l nodes=1:ppn=16
-#PBS -l walltime=00:05:00
-#PBS -V
-#PBS -k n
-#PBS -o cleanup.out
-#PBS -e cleanup.err
+#SBATCH --job-name=cleanup
+#SBATCH --partition=defq
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --export=ALL
+#SBATCH --time=0:10:00
+#SBATCH --mail-type=FAIL
+#SBATCH --mail-user=jwschwab@ucsc.edu
 
 # wait a bit for final jobs to finish. there seems to be a race
 # condition where the output from the last job to finish isn't on disk

@@ -1,17 +1,20 @@
 #!/bin/bash
 
-#PBS -N star
-#PBS -l nodes=1:ppn=16
-#PBS -l walltime=12:00:00
-#PBS -V
-#PBS -j oe
+#SBATCH --job-name=star
+#SBATCH --partition=defq
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=40
+#SBATCH --export=ALL
+#SBATCH --time=4:00:00
+#SBATCH --mail-type=FAIL
+#SBATCH --mail-user=jwschwab@ucsc.edu
 
 module load mesasdk/${MESASDK_VERSION}
 clean_caches
 
 if [ -n "${USE_MESA_TEST}" ]; then
-    mesa_test test_one ${MESA_DIR} ${PBS_ARRAYID} --module=star ${MESA_TEST_OPTIONS}
+    mesa_test test_one ${MESA_DIR} ${SLURM_ARRAY_TASK_ID} --module=star ${MESA_TEST_OPTIONS}
 else
     cd ${MESA_DIR}/star/test_suite
-    ./${MESA_TEST_COMMAND} ${PBS_ARRAYID}
+    ./${MESA_TEST_COMMAND} ${SLURM_ARRAY_TASK_ID}
 fi

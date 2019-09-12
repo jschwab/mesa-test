@@ -18,7 +18,7 @@ export MESASDK_VERSION=20190830
 # set OP opacities
 export MESA_OP_MONO_DATA_PATH=${HOME}/OP4STARS_1.3/mono
 export MESA_OP_MONO_DATA_CACHE_FILENAME=${HOME}/OP4STARS_1.3/mono/op_mono_cache.bin
-rm ${MESA_OP_MONO_DATA_CACHE_FILENAME}
+rm -f ${MESA_OP_MONO_DATA_CACHE_FILENAME}
 
 export MESA_BASE_DIR=/data/users/jwschwab
 

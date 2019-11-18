@@ -27,7 +27,7 @@ export MESA_BASE_DIR=${DATA_DIR}
 export MY_EMAIL_ADDRESS=jwschwab@ucsc.edu
 
 # choose SLURM options (used for all sbatch calls)
-export MY_SLURM_SETTINGS="--partition=defq"
+export MY_SLURM_OPTIONS="--partition=defq"
 
 # pick version control system; default is svn
 case "$1" in

@@ -51,4 +51,15 @@ This cleans up and will send an email with the results to
 ~MY_EMAIL_ADDRESS~.  (Set this variable in ~test_mesa.sh~ or edit the script.)
 ** git-hook.sh
 This is an example post-receive hook that can start the tests when a
-git repo is pushed to.
+git repo receives a push on a branch.  This script will need to be
+customized to your system. My system layout is:
+
+There is a bare MESA git repository.  (Its location is specified as
+~$MESA_GIT_DIR~ in the hook.) This file (~git_hook.sh~) is symlinked
+to ~hooks/post-receive~.
+
+The hook does a checkout of the branch that was pushed to in the
+directory ~$MESA_TEST_DIR~.  This directory is what will be specified
+as ~$MESA_DIR~ in ~test_mesa.sh~.
+
+

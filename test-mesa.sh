@@ -20,9 +20,14 @@ export MESA_OP_MONO_DATA_PATH=${DATA_DIR}/OP4STARS_1.3/mono
 export MESA_OP_MONO_DATA_CACHE_FILENAME=${DATA_DIR}/OP4STARS_1.3/mono/op_mono_cache.bin
 rm -f ${MESA_OP_MONO_DATA_CACHE_FILENAME}
 
+# parent directory of MESA_DIR
 export MESA_BASE_DIR=${DATA_DIR}
 
+# set email address for SLURM and for cleanup output
 export MY_EMAIL_ADDRESS=jwschwab@ucsc.edu
+
+# choose SLURM options (used for all sbatch calls)
+export MY_SLURM_SETTINGS="--partition=defq"
 
 # pick version control system; default is svn
 case "$1" in
@@ -91,7 +96,12 @@ esac
 touch ${MESA_DIR}/.testing
 
 # submit job to install MESA
-export INSTALL_JOBID=$(sbatch --parsable --output="${MESA_DIR}/install.log" install.sh)
+export INSTALL_JOBID=$(sbatch --parsable \
+                              --ntasks-per-node=${OMP_NUM_THREADS} \
+                              --output="${MESA_DIR}/install.log" \
+                              --mail-user={$MY_EMAIL_ADDRESS} \
+                              ${MY_SLURM_OPTIONS} \
+                              install.sh)
 
 # submit job to report build error
 # sbatch error.sh -W depend=afternotok:${INSTALL_JOBID}
@@ -102,7 +112,14 @@ cd ${MESA_DIR}/star/test_suite
 export NTESTS=$(./count_tests)
 cd -
 
-export STAR_JOBID=$(sbatch --parsable --output="${MESA_DIR}/star.log-%a" --dependency=afterok:${INSTALL_JOBID} --array=1-${NTESTS} star.sh)
+export STAR_JOBID=$(sbatch --parsable \
+                           --ntasks-per-node=${OMP_NUM_THREADS} \
+                           --array=1-${NTESTS} \
+                           --output="${MESA_DIR}/star.log-%a" \
+                           --dependency=afterok:${INSTALL_JOBID} \
+                           --mail-user={$MY_EMAIL_ADDRESS} \
+                           ${MY_SLURM_OPTIONS} \
+                           star.sh)
 
 # finally, run the binary test suite
 # this is part is parallelized, so get the number of tests
@@ -110,8 +127,18 @@ cd ${MESA_DIR}/binary/test_suite
 export NTESTS=$(./count_tests)
 cd -
 
-export BINARY_JOBID=$(sbatch --parsable --output="${MESA_DIR}/binary.log-%a" --dependency=afterok:${INSTALL_JOBID} --array=1-${NTESTS} binary.sh)
+export BINARY_JOBID=$(sbatch --parsable \
+                             --ntasks-per-node=${OMP_NUM_THREADS} \
+                             --array=1-${NTESTS} \
+                             --output="${MESA_DIR}/binary.log-%a" \
+                             --dependency=afterok:${INSTALL_JOBID}\
+                             --mail-user=${MY_EMAIL_ADDRESS} \
+                             ${MY_SLURM_OPTIONS} \
+                             binary.sh)
 
 # send the email
-sbatch --output="${MESA_DIR}/cleanup.log" --dependency=afterany:${STAR_JOBID},afterany:${BINARY_JOBID} cleanup.sh
+sbatch --output="${MESA_DIR}/cleanup.log" \
+       --dependency=afterany:${STAR_JOBID},afterany:${BINARY_JOBID} \
+       ${MY_SLURM_OPTIONS} \
+       cleanup.sh
 

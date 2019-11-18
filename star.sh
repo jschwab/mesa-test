@@ -1,13 +1,10 @@
 #!/bin/bash
 
 #SBATCH --job-name=star
-#SBATCH --partition=defq
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=40
 #SBATCH --export=ALL
 #SBATCH --time=4:00:00
 #SBATCH --mail-type=FAIL
-#SBATCH --mail-user=jwschwab@ucsc.edu
 
 module load mesasdk/${MESASDK_VERSION}
 clean_caches

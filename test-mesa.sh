@@ -16,11 +16,11 @@ export MESA_TEST_OPTIONS="${MESA_TEST_OPTIONS} --no-svn --no-diff"
 export MESASDK_VERSION=20190830
 
 # set OP opacities
-export MESA_OP_MONO_DATA_PATH=${HOME}/OP4STARS_1.3/mono
-export MESA_OP_MONO_DATA_CACHE_FILENAME=${HOME}/OP4STARS_1.3/mono/op_mono_cache.bin
+export MESA_OP_MONO_DATA_PATH=${DATA_DIR}/OP4STARS_1.3/mono
+export MESA_OP_MONO_DATA_CACHE_FILENAME=${DATA_DIR}/OP4STARS_1.3/mono/op_mono_cache.bin
 rm -f ${MESA_OP_MONO_DATA_CACHE_FILENAME}
 
-export MESA_BASE_DIR=/data/users/jwschwab
+export MESA_BASE_DIR=${DATA_DIR}
 
 export MY_EMAIL_ADDRESS=jwschwab@ucsc.edu
 
@@ -33,7 +33,7 @@ case "$1" in
     *)
         export USE_MESA_TEST=t
         export MESA_VC=svn
-        export MESA_DIR=${MESA_BASE_DIR}/mesa-svn-test
+        export MESA_DIR=${MESA_BASE_DIR}/mesa-svn
         ;;
 esac
 

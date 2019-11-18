@@ -6,7 +6,7 @@ update_mesa() {
 
     # relevant directories
     MESA_GIT_DIR=/data/users/jwschwab/mesa.git
-    MESA_TEST_DIR=/data/users/jwschwab/mesa-git-test
+    MESA_TEST_DIR=/data/groups/ramirez-ruiz/jwschwab/mesa-git-test
 
     # clean up and checkout pushed branch
     rm -rf ${MESA_TEST_DIR}

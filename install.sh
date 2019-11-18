@@ -6,16 +6,10 @@
 #SBATCH --time=1:00:00
 #SBATCH --mail-type=FAIL
 
-# load SDK
 module load mesasdk/${MESASDK_VERSION}
-
-# clean up cache dir if needed
-if [ -n "${MESA_CACHES_DIR}" ]; then
-    rm -rf ${MESA_CACHES_DIR}
-    mkdir -p ${MESA_CACHES_DIR}
-fi
+clean_caches
 
 # build MESA
-cd $MESA_DIR
+cd ${MESA_DIR}
 ./clean
 ./install

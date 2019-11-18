@@ -30,21 +30,25 @@ fetch the latest MESA version, so on my cluster, that means it needs
 to run on a login node.  It exits after checking out a new copy of
 MESA and spawning the other jobs.
 #+BEGIN_EXAMPLE
-./test-mesa.sh [GIT OR SVN]
+./test-mesa.sh [git OR svn]
 #+END_EXAMPLE
 The first argument picks whether to run from the svn using [[https://github.com/MESAHub/mesa_test][mesa_test]]
-or from git using the built-in `each_test_run`.
+or from git using the ~each_test_run~ script included in MESA.
+
+You should edit this script to customize various values for your
+system. Look for comments beginning ~# set~.
+
 ** install.sh
 This installs MESA.
 ** star.sh
-This runs the star test_suite. It uses arrays to run separate jobs for
+This runs the star test_suite. It uses SLURM job arrays to run a separate job for
 each test case.
 ** binary.sh
-This runs the binary test_suite.  It uses arrays to run separate jobs
-for each test case.
+This runs the binary test_suite.  It uses SLURM job arrays to run a separate job for
+each test case.
 ** cleanup.sh
 This cleans up and will send an email with the results to
-MY_EMAIL_ADDRESS.  (Set this variable or edit the script.)
+~MY_EMAIL_ADDRESS~.  (Set this variable in ~test_mesa.sh~ or edit the script.)
 ** git-hook.sh
 This is an example post-receive hook that can start the tests when a
 git repo is pushed to.

@@ -99,7 +99,7 @@ touch ${MESA_DIR}/.testing
 export INSTALL_JOBID=$(sbatch --parsable \
                               --ntasks-per-node=${OMP_NUM_THREADS} \
                               --output="${MESA_DIR}/install.log" \
-                              --mail-user={$MY_EMAIL_ADDRESS} \
+                              --mail-user=${MY_EMAIL_ADDRESS} \
                               ${MY_SLURM_OPTIONS} \
                               install.sh)
 
@@ -117,7 +117,7 @@ export STAR_JOBID=$(sbatch --parsable \
                            --array=1-${NTESTS} \
                            --output="${MESA_DIR}/star.log-%a" \
                            --dependency=afterok:${INSTALL_JOBID} \
-                           --mail-user={$MY_EMAIL_ADDRESS} \
+                           --mail-user=${MY_EMAIL_ADDRESS} \
                            ${MY_SLURM_OPTIONS} \
                            star.sh)
 

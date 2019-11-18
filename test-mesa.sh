@@ -10,7 +10,7 @@ export MY_EMAIL_ADDRESS=jwschwab@ucsc.edu
 # set SLURM options (used for all sbatch calls)
 export MY_SLURM_OPTIONS="--partition=defq"
 
-# set how many threads; this will also be sent to SLURM as --nthreads 
+# set how many threads; this will also be sent to SLURM as --ntasks-per-node
 export OMP_NUM_THREADS=40
 
 

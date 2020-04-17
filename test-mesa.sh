@@ -2,7 +2,7 @@
 set -euxo pipefail
 
 # set MESA SDK version
-export MESASDK_VERSION=20190830
+export MESASDK_VERSION=20.3.1
 
 # set email address for SLURM and for cleanup output
 export MY_EMAIL_ADDRESS=jwschwab@ucsc.edu
@@ -11,7 +11,7 @@ export MY_EMAIL_ADDRESS=jwschwab@ucsc.edu
 export MY_SLURM_OPTIONS="--partition=defq"
 
 # set how many threads; this will also be sent to SLURM as --ntasks-per-node
-export OMP_NUM_THREADS=40
+export OMP_NUM_THREADS=36
 
 
 # set other relevant MESA options

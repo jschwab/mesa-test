@@ -30,7 +30,7 @@ grep "fail" star.log >> output.txt
 grep "fail" binary.log >> output.txt
 
 # send full results via email
-mail -s "MESA Test Suite r${VERSION}" -a star.log -a binary.log -a install.log ${MY_EMAIL_ADDRESS} < output.txt
+mail -v -s "MESA Test Suite r${VERSION}" -a star.log -a binary.log -a install.log -q output.txt ${MY_EMAIL_ADDRESS} < /dev/null
 
 # clean stuff up
 # rm install.log star.log-* star.log binary.log-* binary.log

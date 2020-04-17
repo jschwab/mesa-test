@@ -3,7 +3,7 @@
 #SBATCH --job-name=binary
 #SBATCH --nodes=1
 #SBATCH --export=ALL
-#SBATCH --time=4:00:00
+#SBATCH --time=1:00:00
 #SBATCH --mail-type=FAIL
 
 module load mesasdk/${MESASDK_VERSION}

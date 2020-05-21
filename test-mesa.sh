@@ -78,7 +78,6 @@ case "${MESA_VC}" in
         (
             cd ${MESA_DIR}
             svnversion > test.version
-            cp test.version data/version_number
         )
         ;;
 

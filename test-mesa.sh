@@ -8,7 +8,7 @@ export MESASDK_VERSION=20.3.1
 export MY_EMAIL_ADDRESS=jwschwab@ucsc.edu
 
 # set SLURM options (used for all sbatch calls)
-export MY_SLURM_OPTIONS="--partition=defq"
+export MY_SLURM_OPTIONS="--partition=windfall --account=windfall"
 
 # set how many threads; this will also be sent to SLURM as --ntasks-per-node
 export OMP_NUM_THREADS=36

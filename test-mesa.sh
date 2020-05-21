@@ -114,7 +114,7 @@ export INSTALL_JOBID=$(sbatch --parsable \
 # submit job to report build error
 # sbatch error.sh -W depend=afternotok:${INSTALL_JOBID}
 
-# next, run the star test suite
+# run the star test suite
 # this is part is parallelized, so get the number of tests
 cd ${MESA_DIR}/star/test_suite
 export NTESTS=$(./count_tests)
@@ -129,7 +129,8 @@ export STAR_JOBID=$(sbatch --parsable \
                            ${MY_SLURM_OPTIONS} \
                            star.sh)
 
-# finally, run the binary test suite
+
+# run the binary test suite
 # this is part is parallelized, so get the number of tests
 cd ${MESA_DIR}/binary/test_suite
 export NTESTS=$(./count_tests)
@@ -144,9 +145,26 @@ export BINARY_JOBID=$(sbatch --parsable \
                              ${MY_SLURM_OPTIONS} \
                              binary.sh)
 
+
+# run the astero test suite
+# this is part is parallelized, so get the number of tests
+cd ${MESA_DIR}/astero/test_suite
+export NTESTS=$(./count_tests)
+cd -
+
+export ASTERO_JOBID=$(sbatch --parsable \
+                             --ntasks-per-node=${OMP_NUM_THREADS} \
+                             --array=1-${NTESTS} \
+                             --output="${MESA_DIR}/astero.log-%a" \
+                             --dependency=afterok:${INSTALL_JOBID}\
+                             --mail-user=${MY_EMAIL_ADDRESS} \
+                             ${MY_SLURM_OPTIONS} \
+                             astero.sh)
+
+
 # send the email
 sbatch --output="${MESA_DIR}/cleanup.log" \
-       --dependency=afterany:${STAR_JOBID},afterany:${BINARY_JOBID} \
+       --dependency=afterany:${STAR_JOBID},afterany:${BINARY_JOBID},afterany:${ASTERO_JOBID} \
        ${MY_SLURM_OPTIONS} \
        cleanup.sh
 

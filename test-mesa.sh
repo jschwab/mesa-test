@@ -70,7 +70,9 @@ case "${MESA_VC}" in
         rm -rf ${MESA_DIR}
 
         # checkout MESA from rsync clone
-        svn co https://subversion.assembla.com/svn/mesa^mesa/trunk ${MESA_DIR}
+        #svn co https://subversion.assembla.com/svn/mesa^mesa/trunk ${MESA_DIR}
+	svnsync sync file://${DATA_DIR}/assembla_mesa
+        svn co file://${DATA_DIR}/assembla_mesa/trunk ${MESA_DIR}
         if [ $? -ne 0 ]
         then
             echo "Failed to checkout SVN"

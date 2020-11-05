@@ -15,6 +15,9 @@ export OMP_NUM_THREADS=36
 
 
 # set other relevant MESA options
+#export MESA_RUN_OPTIONAL=t
+#export MESA_FPE_CHECKS_ON=1
+
 
 # set paths for OP opacities
 export MESA_OP_MONO_DATA_PATH=${DATA_DIR}/OP4STARS_1.3/mono

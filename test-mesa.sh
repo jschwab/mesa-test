@@ -1,8 +1,16 @@
 #!/bin/bash
 set -euxo pipefail
 
+#SBATCH --job-name=test_mesa
+#SBATCH --nodes=1
+#SBATCH --export=ALL
+#SBATCH --time=1:00:00
+#SBATCH --mail-type=FAIL
+#SBATCH --requeue
+
 # set MESA SDK version
 export MESASDK_VERSION=20.3.1
+module load mesasdk/${MESASDK_VERSION}
 
 # set email address for SLURM and for cleanup output
 export MY_EMAIL_ADDRESS=jwschwab@ucsc.edu
@@ -28,67 +36,34 @@ rm -f ${MESA_OP_MONO_DATA_CACHE_FILENAME}
 #export MESA_CACHES_DIR=/tmp/mesa-cache
 
 
-# set MESA_DIR
-# export MESA_DIR=
-
 # if USE_MESA_TEST is set, use mesa_test gem; pick its options via MESA_TEST_OPTIONS
 # otherwise, use built-in each_test_run script
-# export USE_MESA_TEST=t
-# export MESA_TEST_OPTIONS="--force --no-submit"
+export USE_MESA_TEST=t
+export MESA_TEST_OPTIONS="--force"
 
 
-# first argument to script chooses where to get MESA (git or svn)
-# defaults to svn
-case "$1" in
-    git)
-        export MESA_VC=git
-        export MESA_DIR=${DATA_DIR}/mesa-git-test
-        ;;
+# first argument to script chooses whether to use mesa_test
+case "${USE_MESA_TEST}" in
+
+    # test with mesa_test
+    t)
+
+	mesa_test install main #c85b54c #jws/improve-kap-compton
+	mesa_test submit --empty
+	export MESA_WORK=/data/groups/ramirez-ruiz/jwschwab/.mesa_test/work
+
+	if ! grep "MESA installation was successful" "${MESA_WORK}/build.log"; then
+	    echo "MESA installation failed"
+	    exit
+	fi
+
+	;;
+
+    # test internally
     *)
-        export MESA_VC=svn
-        export MESA_DIR=${DATA_DIR}/mesa-svn
-        export USE_MESA_TEST=t
-        export MESA_TEST_OPTIONS="--force --no-submit --no-svn --no-diff"
-        ;;
-esac
-
-
-# if directory is already being tested, exit
-if [ -e ${MESA_DIR}/.testing ]; then
-    echo "Tests are in-progress"
-    exit 1
-fi
-
-
-# commands to check out copy of MESA
-case "${MESA_VC}" in
-
-    # test SVN version
-    svn)
-
-        # remove old version of MESA directory
-        rm -rf ${MESA_DIR}
-
-        # checkout MESA from rsync clone
-        #svn co https://subversion.assembla.com/svn/mesa^mesa/trunk ${MESA_DIR}
-	svnsync sync file://${DATA_DIR}/assembla_mesa
-        svn co file://${DATA_DIR}/assembla_mesa/trunk ${MESA_DIR}
-        if [ $? -ne 0 ]
-        then
-            echo "Failed to checkout SVN"
-            exit 1
-        fi
-
-        # extract the "true" svn version
-        (
-            cd ${MESA_DIR}
-            svnversion > test.version
-        )
-        ;;
-
-    # test git version
-    git)
-        git --git-dir ${MESA_DIR}/.git describe --all --long > ${MESA_DIR}/test.version
+        #git --git-dir ${MESA_DIR}/.git describe --all --long > ${MESA_DIR}/test.version
+	echo "not implemented"
+	exit
         ;;
 esac
 
@@ -104,31 +79,16 @@ clean_caches(){
 
 export -f clean_caches
 
-# mark directory as being tested
-touch ${MESA_DIR}/.testing
-
-# submit job to install MESA
-export INSTALL_JOBID=$(sbatch --parsable \
-                              --ntasks-per-node=${OMP_NUM_THREADS} \
-                              --output="${MESA_DIR}/install.log" \
-                              --mail-user=${MY_EMAIL_ADDRESS} \
-                              ${MY_SLURM_OPTIONS} \
-                              install.sh)
-
-# submit job to report build error
-# sbatch error.sh -W depend=afternotok:${INSTALL_JOBID}
-
 # run the star test suite
 # this is part is parallelized, so get the number of tests
-cd ${MESA_DIR}/star/test_suite
+cd ${MESA_WORK}/star/test_suite
 export NTESTS=$(./count_tests)
 cd -
 
 export STAR_JOBID=$(sbatch --parsable \
                            --ntasks-per-node=${OMP_NUM_THREADS} \
                            --array=1-${NTESTS} \
-                           --output="${MESA_DIR}/star.log-%a" \
-                           --dependency=afterok:${INSTALL_JOBID} \
+                           --output="${MESA_WORK}/star.log-%a" \
                            --mail-user=${MY_EMAIL_ADDRESS} \
                            ${MY_SLURM_OPTIONS} \
                            star.sh)
@@ -136,15 +96,14 @@ export STAR_JOBID=$(sbatch --parsable \
 
 # run the binary test suite
 # this is part is parallelized, so get the number of tests
-cd ${MESA_DIR}/binary/test_suite
+cd ${MESA_WORK}/binary/test_suite
 export NTESTS=$(./count_tests)
 cd -
 
 export BINARY_JOBID=$(sbatch --parsable \
                              --ntasks-per-node=${OMP_NUM_THREADS} \
                              --array=1-${NTESTS} \
-                             --output="${MESA_DIR}/binary.log-%a" \
-                             --dependency=afterok:${INSTALL_JOBID}\
+                             --output="${MESA_WORK}/binary.log-%a" \
                              --mail-user=${MY_EMAIL_ADDRESS} \
                              ${MY_SLURM_OPTIONS} \
                              binary.sh)
@@ -152,22 +111,21 @@ export BINARY_JOBID=$(sbatch --parsable \
 
 # run the astero test suite
 # this is part is parallelized, so get the number of tests
-cd ${MESA_DIR}/astero/test_suite
+cd ${MESA_WORK}/astero/test_suite
 export NTESTS=$(./count_tests)
 cd -
 
 export ASTERO_JOBID=$(sbatch --parsable \
                              --ntasks-per-node=${OMP_NUM_THREADS} \
                              --array=1-${NTESTS} \
-                             --output="${MESA_DIR}/astero.log-%a" \
-                             --dependency=afterok:${INSTALL_JOBID}\
+                             --output="${MESA_WORK}/astero.log-%a" \
                              --mail-user=${MY_EMAIL_ADDRESS} \
                              ${MY_SLURM_OPTIONS} \
                              astero.sh)
 
 
 # send the email
-sbatch --output="${MESA_DIR}/cleanup.log" \
+sbatch --output="${MESA_WORK}/cleanup.log" \
        --dependency=afterany:${STAR_JOBID},afterany:${BINARY_JOBID},afterany:${ASTERO_JOBID} \
        ${MY_SLURM_OPTIONS} \
        cleanup.sh

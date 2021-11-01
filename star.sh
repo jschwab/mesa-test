@@ -10,6 +10,8 @@
 module load mesasdk/${MESASDK_VERSION}
 clean_caches
 
+echo "star ${SLURM_ARRAY_TASK_ID} $(hostname)" >> /home/jwschwab/fail.log
+
 if [ -n "${USE_MESA_TEST}" ]; then
     mesa_test test ${SLURM_ARRAY_TASK_ID} --module=star ${MESA_TEST_OPTIONS}
 else

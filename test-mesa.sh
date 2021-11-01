@@ -23,9 +23,10 @@ export OMP_NUM_THREADS=36
 
 
 # set other relevant MESA options
-#export MESA_RUN_OPTIONAL=t
+#export MESA_SKIP_OPTIONAL=t
 #export MESA_FPE_CHECKS_ON=1
-
+export MESA_GIT_LFS_SLEEP=30
+export MESA_FORCE_PGSTAR_FLAG=false
 
 # set paths for OP opacities
 export MESA_OP_MONO_DATA_PATH=${DATA_DIR}/OP4STARS_1.3/mono
@@ -48,7 +49,7 @@ case "${USE_MESA_TEST}" in
     # test with mesa_test
     t)
 
-	mesa_test install main #c85b54c #jws/improve-kap-compton
+	mesa_test install jws/energy-eqn-cleanup
 	mesa_test submit --empty
 	export MESA_WORK=/data/groups/ramirez-ruiz/jwschwab/.mesa_test/work
 
